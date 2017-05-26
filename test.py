@@ -7,8 +7,6 @@ import sys
 import os
 import subprocess
 
-
-
 folder_re = argv[1]
 file_re = ""
 
@@ -18,15 +16,31 @@ if len(argv) == 3:
 dirs = [x for x in os.listdir(".") if re.search(folder_re, x)]
 
 for dir in dirs:
-    files = [x for x in os.listdir(dir) if re.search(file_re, x) and not re.search("\.", x)]
+    files = [x for x in os.listdir(dir) if re.search(file_re, x) and re.search("\.rs", x)]
     for file in files:
+        base = re.sub("\.rs", "", file)
         base_dir = "./" + dir + "/"
-        exec_file = base_dir + file
-        in_file = base_dir + file + ".in"
-        ref_file = base_dir + file + ".ref"
+        exec_file = base_dir + base
+        in_file = base_dir + base + ".in"
+        ref_file = base_dir + base + ".ref"
+        src_file = base_dir + base + ".rs"
+
+        if os.path.isfile(exec_file):
+            os.remove(exec_file)
+
+        if os.path.isfile(src_file):
+            cmd = ["rustc", src_file, "-o", exec_file]
+            sub = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            out,err = sub.communicate()
+            out = out.decode("utf-8")
+            err = err.decode("utf-8")
+            if sub.returncode != 0:
+                print(out)
+                print(err)
+                continue
 
         if os.path.isfile(in_file) and os.path.isfile(ref_file):
-            cmd = ["./" + dir + "/" + file, dir + "/" + file + ".in"]
+            cmd = [exec_file, in_file]
             sub = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
             out,err = sub.communicate()
             out = out.decode("utf-8")
