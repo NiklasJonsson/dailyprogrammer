@@ -32,10 +32,6 @@ const N_MOVS: usize = 8;
 fn move_to(to : &Point) -> i32 {
     let start = Point{x: 0, y: 0};
 
-    if start == *to {
-        return 0;
-    }
-
     let mut visited = BTreeSet::new();
     let mut dist = BTreeMap::new();
     let mut queue = VecDeque::new();
@@ -44,9 +40,11 @@ fn move_to(to : &Point) -> i32 {
     queue.push_back(start);
     dist.insert(start, 0);
 
-    while !queue.is_empty() {
-        let cur = queue.pop_front().unwrap();
+    if start == *to {
+        return 0;
+    }
 
+    while let Some(cur) = queue.pop_front() {
         for i in 0..N_MOVS {
             let next = Point{x: cur.x + MOVES[i][0], y: cur.y + MOVES[i][1]};
 
