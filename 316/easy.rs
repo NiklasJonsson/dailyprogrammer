@@ -64,13 +64,14 @@ fn move_to(to : &Point) -> i32 {
 }
 
 fn main() {
-    let in_path = env::args().nth(1).unwrap();
+    let in_path = match env::args().nth(1) {
+        Some(x) => x,
+        None => panic!("Can't find file name in args")
+    };
 
-    let file = File::open(&in_path).unwrap();
-    let bfr = BufReader::new(file);
+    let mut line_it = BufReader::new(File::open(&in_path).unwrap()).lines();
 
-    for line in bfr.lines() {
-        let l = line.unwrap();
+    while let Some(Ok(l)) = line_it.next() {
         let strs = l.split_whitespace();
         let numbers : Vec<i32> = strs.map(|a| a.parse().unwrap()).collect();
         assert_eq!(numbers.len(), 2);
