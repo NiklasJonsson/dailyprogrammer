@@ -5,7 +5,7 @@ use std::env;
 use std::fs::File;
 use std::io::prelude::*;
 
-#[derive (PartialEq, Eq, Debug, Copy, Clone)]
+#[derive(PartialEq, Eq, Debug, Copy, Clone)]
 struct Point {
     x: i32,
     y: i32
